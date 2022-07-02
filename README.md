@@ -105,3 +105,111 @@ Gang Of Four design patterns are grouped into 3 categories:
 | Strategy | This pattern defines a family of algorithms, encapsulate each one, and make them interchangeable. |
 | Template Method | Pattern defines steps of an algorithm as methods in an interface while allowing subclasses to override some steps in the overall algorithm. |
 | Visitor | Pattern separates an algorithm from the object structure on which it operates, which provides the ability to add new operations to existing object structures without modifying those structures |
+
+
+## 1.1. Singleton Design Pattern
+
+Properties
+
+* Creational design pattern
+* Only one instance of the class should exists
+* Other classes should be able to get instance of Singleton class
+* Used in logging, cache, session, drivers
+
+
+Implementation
+
+* Constructor should be private (to prevent creation of multiple objects outside)
+* Public method for returning instance
+* Instance type - private static
+
+
+Initialization type
+
+* Eager Initialization (As soon as we initialize the instance, it automatically create/declare at the same time)
+* Lazy Initialization (Only create object when it finds a call, need)
+* Thread safe Method Initialization
+* Thread safe block Initialization
+
+
+```java
+class SingletonEager {
+private static SingletonEager instance = new SingletonEager(); //Eager Initialization
+
+private SingletonEager() {
+} //Private Constructor
+
+public static SingletonEager getInstance() {
+    return instance;
+}
+
+}
+
+class Singleton {private static Singleton instance;
+
+private Singleton() {
+}
+
+public static Singleton getInstance() {
+    if (instance == null) { //Lazy Initialization
+        instance = new Singleton();
+    }
+    return instance;
+}
+
+}
+
+class SingletonSynchronizedMethod { //Making the Method Synchronized
+
+private static SingletonSynchronizedMethod instance;
+
+private SingletonSynchronizedMethod() {
+}
+
+public static synchronized SingletonSynchronizedMethod getinstance() {
+    if (instance == null) {
+        instance = new SingletonSynchronizedMethod();
+    }
+    return instance;
+}
+
+}
+
+class SingletonSynchronized {
+
+private static SingletonSynchronized instance;
+
+private SingletonSynchronized() {
+}
+
+public static SingletonSynchronized getInstance() { //Making the Block Synchronized
+    if (instance == null) {
+        synchronized (SingletonSynchronized.class) {
+            if (instance == null) {
+                instance = new SingletonSynchronized();
+            }
+        }
+    }
+    return instance;
+}
+
+}
+
+public class SingletonExample {
+
+public static void main(String[] args) {
+    SingletonEager instance1 = SingletonEager.getInstance();
+    System.out.println(instance1); //SingletonEager@6bf2d00e
+
+    SingletonEager instance2 = SingletonEager.getInstance();
+    System.out.println(instance2); //SingletonEager@6bf2d00e
+
+    Singleton instance3 = Singleton.getInstance();
+    System.out.println(instance3); //Singleton@Hexcode
+
+    Singleton instance4 = Singleton.getInstance();
+    System.out.println(instance4); //Singleton@Hexcode
+
+  }
+}
+```
