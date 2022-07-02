@@ -24,8 +24,9 @@ Gang Of Four design patterns are grouped into 3 categories:
 
 ## Creational Design Patterns
 
-| **Abstract Factory *(Garden Factory)*** | Provides an interface for creating families of related or dependent objects without specifying their concrete classes. |
+| **Pattern** | Description |
 |----|----|
+| Abstract Factory *(Garden Factory)* | Provides an interface for creating families of related or dependent objects without specifying their concrete classes. |
 | Factory Method *(Namer and Minimal Factory)* | Deals with the problem of creating related objects without specifying the exact class of object that will be created. |
 | Singleton *(More click one window)* | This pattern ensures a class has only one instance and provides a global(app level) point of access to it. |
 | Prototype *(Clone Bookshop)* | Specify the kinds of objects to create using a prototypical instance, and create new objects by copying this prototype. |
@@ -34,8 +35,9 @@ Gang Of Four design patterns are grouped into 3 categories:
 
 ## Structural Design Patterns
 
-| **Adapter** | This pattern lets classes work together that could not otherwise because of incompatible interfaces. |
+| **Pattern** | Description |
 |----|----|
+| Adapter| This pattern lets classes work together that could not otherwise because of incompatible interfaces. |
 | Bridge | This pattern decouples an abstraction from its implementation so that they become loosely coupled. |
 | Composite | This pattern allows aggregating objects such that individual objects and composition of objects can be treated uniformly. |
 | Decorator | This pattern attaches additional responsibilities to an object dynamically while keeping the interface same |
@@ -47,8 +49,9 @@ Gang Of Four design patterns are grouped into 3 categories:
 
 ## Behavioral Design Patterns
 
-| Chain of Responsibility | This pattern defines a chain of processing objects in a chain in such a way that the incoming request is processed by each processing objects in sequence |
+| **Pattern** | Description |
 |----|----|
+| Chain of Responsibility | This pattern defines a chain of processing objects in a chain in such a way that the incoming request is processed by each processing objects in sequence |
 | Command | In this pattern an object is used to represent and encapsulate all the information needed to call a method at a later time. |
 | Interpreter | This pattern defines a representation for a given language's grammar along with an interpreter that uses the representation to interpret sentences in the language. |
 | Iterator | This pattern provides a way to access the elements of an aggregate object sequentially without exposing its underlying representation. |
