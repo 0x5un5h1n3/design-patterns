@@ -1,5 +1,48 @@
 # Design Patterns
 
+<!-- TABLE OF CONTENTS -->
+<details open="open">
+  <summary>Table of Contents</summary>
+  <Ul>
+    <li>
+      <a href="#what-is-a-design-pattern">Introduction<a>
+      <ul>
+        <li><a href="#gang-of-four-design-patterns">Gang of Four Design Patterns</a></li>
+        <li><a href="#advantages-of-design-patterns">Advantages of Design Patterns</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="categories-of-design-patterns">Design Pattern Types<a>
+      <ul>
+        <li><a href="#creational-design-patterns">Creational Design Patterns</a></li>
+        <li><a href="#structual-design-patterns">Structural Design Patterns</a></li>
+        <li><a href="#behavioral-design-patterns">Behavioral Design Patterns</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#11-singleton-design-pattern">Creational Design Patterns</a>
+      <ul>
+        <li><a href="#11-singleton-design-pattern">Singleton Design Pattern</a></li>
+        <li><a href="#12-factory-design-pattern">Factory Design Pattern</a></li>
+        <li><a href="#13-abstract-factory-design-pattern">Abstract Factory Design Pattern</a></li>
+        <li><a href="#14-builder-design-pattern">Builder Design Pattern</a></li>
+        <li><a href="#15-prototype-design-pattern">Prototype Design Pattern</a></li>
+        </ul>
+    </li>
+    <li>
+      <a href="#21-adapter-design-pattern">Structural Design Patterns</a>
+      <ul>
+        <li><a href="#21-adapter-design-pattern">Adapter Design Pattern</a></li>
+        <li><a href="#22-composite-design-pattern">Composite Design Pattern</a></li>
+        <li><a href="#23-proxy-design-pattern">Proxy Design Pattern</a></li>
+        <li><a href="#24-flyweight-design-pattern">Flyweight Design Pattern</a></li>
+        <li><a href="#25-facade-design-pattern">Facade Design Pattern</a></li>
+        <li><a href="#26-bridge-design-pattern">Bridge Design Pattern</a></li>
+        <li><a href="#27-decorator-design-pattern">Decorator Design Pattern</a></li>
+        </ul>
+    </li>
+  </Ul>
+</details>
 
 ## What is a Design Pattern
 
