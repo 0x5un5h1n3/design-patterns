@@ -54,7 +54,7 @@ These are design patterns which were defined by four authors - Erich Gamma, Rich
 
 ## Advantages of design patterns
 
-They are reusable in multiple projects. They provide the solutions that help to define the system architecture. They capture the software engineering experiences. They provide transparency to the design of an application. They are well-proved and testified solutions since they have been built upon the knowledge and experience of expert software developers. Design patterns don?t guarantee an absolute solution to a problem. They provide clarity to the system architecture and the possibility of building a better system.
+They are reusable in multiple projects. They provide the solutions that help to define the system architecture. They capture the software engineering experiences. They provide transparency to the design of an application. They are well-proved and testified solutions since they have been built upon the knowledge and experience of expert software developers. Design patterns don't guarantee an absolute solution to a problem. They provide clarity to the system architecture and the possibility of building a better system.
 
 ## Categories of GOF Design Patterns
 
@@ -86,7 +86,7 @@ Gang Of Four design patterns are grouped into 3 categories:
 | Decorator | This pattern attaches additional responsibilities to an object dynamically while keeping the interface same |
 | Facade | This pattern provides a simpler interface to a larger and more complex system such as a class library or a complex API. |
 | Flyweight | This pattern minimizes memory usage by sharing common data between objects. |
-| Proxy | Proxy is a surrogate or placeholder class for another class mostly done with an intention of intercepting access to the said class.Design Patterns Handy Quick |
+| Proxy | Proxy is a surrogate or placeholder class for another class mostly done with an intention of intercepting access to the said class. |
 
  
 
