@@ -213,3 +213,229 @@ public static void main(String[] args) {
   }
 }
 ```
+
+## 1.2. Factory Design Pattern
+
+Properties
+
+* Creational design pattern
+* Used when we have multiple sub-classes of Super class and based on input we want to return one class instance
+* It provides abstraction between implementation and client classes
+* Remove the instantiation of client classes from client code
+
+
+When to use?
+
+* A class can't anticipate which kind of class of objects it must create
+* A class uses its sub-classes to specify which objects it creates
+* You want to localize the knowledge of which class gets created
+
+
+There are several similar variations on the factory pattern to recognize
+
+* The base class is abstract and the pattern must return a complete working class
+* The base class contains default methods and is only sub-classed for cases where the default methods are insufficient
+* Parameters are passed to the factory telling it which of several class types to return. In this case the classes may share the same method names but may do something quite different
+
+  
+
+Implementation
+
+* Super class can be instance or abstract class or basic class
+* Factory class has a static method which returns the instance of Sub-class based on input
+
+
+Ex 1:
+
+```java
+abstract class Vehicle {
+
+    public abstract int getWheel();
+
+    @Override
+    public String toString() {
+        return "Wheel: " + this.getWheel();
+    }
+}
+
+class Car extends Vehicle {
+
+    int wheel;
+
+    Car(int wheel) {
+        this.wheel = wheel;
+    }
+
+    @Override
+    public int getWheel() {
+        return this.wheel;
+    }
+}
+
+class Bike extends Vehicle {
+
+    int wheel;
+
+    Bike(int wheel) {
+        this.wheel = wheel;
+    }
+
+    @Override
+    public int getWheel() {
+        return this.wheel;
+    }
+}
+
+class VehicleFactory {
+
+    public static Vehicle getInstance(String type, int wheel) {
+        if (type == "car") {
+            return new Car(wheel);
+        } else if (type == "bike") {
+            return new Bike(wheel);
+        }
+        return null;
+    }
+}
+
+public class FactoryExample {
+
+    public static void main(String[] args) {
+        Vehicle car = VehicleFactory.getInstance("car", 4);
+        System.out.println(car); //Wheel: 4
+
+        Vehicle bike = VehicleFactory.getInstance("bike", 2);
+        System.out.println(bike); //Wheel: 2
+    }
+}
+```
+
+
+Ex 2:
+
+```java
+class Namer { // a class to take a string apart into two names
+
+    protected String last; //store last name here
+    protected String first; //store first name here
+
+    public String getFirst() {
+        return first; //return first name
+    }
+
+    public String getLast() {
+        return last; //return last name
+    }
+}
+
+class FirstFirst extends Namer {
+
+    public FirstFirst(String s) {
+        int i = s.lastIndexOf(" "); //find separating space
+        if (i > 0) {
+            first = s.substring(0, i).trim();  //left = first name
+            last = s.substring(1 + 1).trim();  //right = last name
+        } else {
+            first = ""; //put all in last name
+            last = s; //if no space
+        }
+    }
+}
+
+class LastFirst extends Namer { //split last, first
+
+    public LastFirst(String s) {
+        int i = s.indexOf(","); //find comma
+        if (i > 0) {
+            last = s.substring(0, i).trim(); //left = last name
+            first = s.substring(i + 1).trim(); //right = first name
+        } else {
+            last = s; //put all in last name
+            first = ""; //if no comma
+        }
+    }
+}
+
+class NameFactory {
+
+    //returns an instance of LastFirst or FirstFirst
+    //depending on whether a comma is found
+    public Namer getNamer(String entry) {
+        int i = entry.indexOf(","); //comma determines name order
+        if (i > 0) {
+            return new LastFirst(entry); //return one class
+        } else {
+            return new FirstFirst(entry);  //or the other
+        }
+    }
+}
+
+class UseClass {
+
+    public static void main(String[] args) {
+        NameFactory nfactory = new NameFactory();
+        String sFirstName, sLastName;
+        Namer namer;
+
+        //send the text to the factory and get a class back
+        namer = nfactory.getNamer("Hello, World");
+        //comute the first and last names using the returned class
+        sFirstName = namer.getFirst();
+        sLastName = namer.getLast();
+
+        System.out.println(sFirstName + " " + sLastName); //World Hello
+    }
+}
+```
+
+
+Ex 3:
+
+```java
+interface Mammal {
+
+    void sound();
+}
+
+class cat implements Mammal {
+
+    public void sound() {
+
+        System.out.println("Meow Meow");
+    }
+}
+
+class dog implements Mammal {
+
+    public void sound() {
+        System.out.println("Woof Woof");
+    }
+}
+
+class MammalFactory {
+
+    public static Mammal getMammalClass(String mammalType) {
+        if (mammalType.equals("dog")) {
+            return new dog();
+        }
+        if (mammalType.equals("cat")) {
+            return new cat();
+        }
+        return null;
+    }
+
+}
+
+class ProgramFactory {
+
+    public static void main(String[] args) {
+        Mammal m1 = MammalFactory.getMammalClass("dog");
+        m1.sound(); //Woof Woof
+
+        Mammal m2 = MammalFactory.getMammalClass("cat");
+        m2.sound(); //Meow Meow
+
+    }
+}
+```
+
