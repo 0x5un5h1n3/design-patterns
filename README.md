@@ -576,7 +576,8 @@ Implementation
 * The main class "Vehicle" has private constructor so to create instance only via Builder class
 * The main class "Vehicle" has only getters
 
-  How does it work
+How does it work
+
 * The Builder Pattern separates the construction of a complex object from its representation so that the same construction process can create different representations
 * The client creates the Director object and configures it with the desired object
 * Director notifies the builder whenever a part of the product should be built
