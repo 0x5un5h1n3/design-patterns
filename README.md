@@ -557,3 +557,186 @@ class Test {
 }
 ```
 
+## 1.4. Builder Design Pattern
+
+Properties
+
+* Creational design pattern
+* Used when we have too many arguments to send in Constructor and it's hard to maintain the order
+* When we don't want to send all parameters in Object initialization (Generally we send optional parameters as Null)
+
+
+Implementation
+
+* A "Static nested class", which contains all arguments of outer class
+* As per naming convention, if class name is "Vehicle", builder class should be "VehicleBuilder"
+* Builder class have a public constructor with all required parameters
+* Builder class should have methods for optional parameters. Method will return the Builder object
+* A "Build()" method that will return the Final object
+* The main class "Vehicle" has private constructor so to create instance only via Builder class
+* The main class "Vehicle" has only getters
+
+  How does it work
+* The Builder Pattern separates the construction of a complex object from its representation so that the same construction process can create different representations
+* The client creates the Director object and configures it with the desired object
+* Director notifies the builder whenever a part of the product should be built
+* Builder handles requests from the director and adds parts to the product
+* The client retrieves the product from the builder
+
+
+Applicability of Builder Pattern
+
+* Use the Builder pattern when;
+  * The algorithm for creating a complex object should be independent of the parts that make up the object and how they are assembled
+  * The construction process must allow different representations for the object that is constructed
+
+
+Consequences of Builder Pattern
+
+* A builder lets you vary the internal representation of the product it builds. It also hides the details of how the product is assembled
+* Each specific builder is independent of the others and of the rest of the others and of the rest of the program. This improves molecularity and makes the addition of other builders relatively simple
+* Because each builder constructs the final product step-by step, depending on the data, you have more control over each final product that a Builder constructs
+* A Builder pattern is somewhat like an Abstract Factory pattern in that both return classes made up of a number of methods and objects
+* The main difference is that while the Abstract factory returns a family of related classes, the Builder constructs a complex object step by step depending on the data presented to it
+
+
+Ex 1:
+
+```java
+class Laptop {
+
+    private String os;
+    private int ram;
+    private String processor;
+    private String brand;
+
+    public Laptop(String os, int ram, String processor, String brand) {
+        this.os = os;
+        this.processor = processor;
+        this.ram = ram;
+        this.brand = brand;
+    }
+
+    @Override
+    public String toString() {
+        return "OS: " + os + ", RAM: "+ ram + "GB, " + "Processor: " + processor + ", Brand: " + brand;
+    }
+
+}
+
+class Builder {
+
+    private String os;
+    private int ram;
+    private String processor;
+    private String brand;
+
+    public Builder setOs(String os) {
+        this.os = os;
+        return this;
+    }
+
+    public Builder setRam(int ram) {
+        this.ram = ram;
+        return this;
+    }
+
+    public Builder setProcessor(String processor) {
+        this.processor = processor;
+        return this;
+    }
+
+    public Builder setBrand(String brand) {
+        this.brand = brand;
+        return this;
+    }
+
+    public Laptop getLaptop() {
+        return new Laptop(os, ram, processor, brand);
+    }
+}
+
+class LapBuilder {
+
+    public static void main(String[] args) {
+        Laptop lap0 = new Laptop("Win10", 8, "i7", "Dell"); //can't be customized
+        Laptop lap1 = new Builder().setOs("Win10").setBrand("Asus").setProcessor("i7").setRam(16).getLaptop();
+        Laptop lap2 = new Builder().setBrand("Asus").setProcessor("i7").setRam(16).getLaptop(); //Can be customized
+        
+        System.out.println(lap0); //OS: Win10, RAM: 8GB, Processor: i7, Brand: Dell
+        System.out.println(lap1); //OS: Win10, RAM: 16GB, Processor: i7, Brand: Asus
+        System.out.println(lap2); //OS: null, RAM: 16GB, Processor: i7, Brand: Asus
+    }
+}
+```
+
+
+Ex 2:
+
+```java
+class Vehicle {
+
+    //required parameter
+    private String engine;
+    private int wheel;
+
+    //optional parameter
+    private int airbags;
+
+    public String getEngine() {
+        return this.engine;
+    }
+
+    public int getWheel() {
+        return this.wheel;
+    }
+
+    public int getAirbags() {
+        return this.airbags;
+    }
+
+    private Vehicle(VehicleBuilder builder) {
+        this.engine = builder.engine;
+        this.wheel = builder.wheel;
+        this.airbags = builder.airbags;
+    }
+
+    public static class VehicleBuilder {
+
+        private String engine;
+        private int wheel;
+
+        private int airbags;
+
+        public VehicleBuilder(String engine, int wheel) {
+            this.engine = engine;
+            this.wheel = wheel;
+        }
+
+        public VehicleBuilder setAirbags(int airbags) {
+            this.airbags = airbags;
+            return this;
+        }
+
+        public Vehicle build() {
+            return new Vehicle(this);
+        }
+    }
+}
+
+public class BuilderExample {
+
+    public static void main(String[] args) {
+        Vehicle car = new Vehicle.VehicleBuilder("1500cc", 4).setAirbags(4).build();
+        Vehicle bike = new Vehicle.VehicleBuilder("250cc", 2).build();
+
+        System.out.println(car.getEngine()); //1500cc
+        System.out.println(car.getWheel()); //4
+        System.out.println(car.getAirbags()); //4
+
+        System.out.println(bike.getEngine()); //250cc
+        System.out.println(bike.getWheel()); //2
+        System.out.println(bike.getAirbags()); //0
+    }
+}
+```
