@@ -741,3 +741,287 @@ public class BuilderExample {
     }
 }
 ```
+
+
+## 1.5. Prototype Design Pattern
+
+Properties
+
+* Creational design pattern
+* Used when you want to avoid multiple Object creation of same instance; instead you copy the object to new object and then we can modify as per our need
+
+
+Implementation
+
+* Object which we're copying should provide copying feature by implementing Cloneable interface
+* We can override clone() method to implement as per our need
+
+
+Why use Prototype
+
+* If you want to create the same object of a class more than one time like if you want to create an object that help of database. (It will take more time if you create two object and load the same database values to both the objects)
+* A prototype pattern is used when creating an instance of a class is very time-consuming or complex is some way. Then, rather than creating more instances, you make copies of the original instance and modify them as appropriate
+* The Prototype pattern specifies the kinds of object to create using a prototypical instance, and create new objects by copying this prototype
+
+
+Consequences
+
+* You can add and remove classes at run time by cloning them as needed
+* You can revise the internal data representation of a class at run time based on program conditions
+* you can also specify new object at run time without creating a proliferation of classes and inheritance structures
+
+
+Difficulties
+
+* One difficulty in implementing the Prototype pattern in Java is that if the classes already exist, you may not be able to change them to add the required clone or deep Clone methods. The deep clone method cab be particularly difficult if all of the class objects contained in a class cannot be declared to implement the Serializable interface
+* Classes that have circular references to other classes cannot really be cloned
+* The idea of having prototype classes to copy implies that you have sufficient access to the data or methods in these classes to change them after cloning. This may require adding data access methods to these prototype classes so that you can modify the data once you have cloned the class
+
+
+Cloning in Java
+
+* You can make a copy of any Java object using the clone method
+  * MyClass ob2 = (MyClass) obj1.clone();
+* The clone method always returns an object of type Object,. You must cast it to the actual type of the object you are cloning, There are three other significant restrictions on the clone method
+  * It is a protected method and can only be called from within the same class or the module that contains that class
+  * You can only clone object which are declared to implement the Cloneable interface
+  * Objects that cannot be cloned throw the CloneNotSupported Exception
+
+
+Implementing Cloneable
+
+* This suggests packaging the actual clone method inside the class where it can access the real clone method
+
+
+```java
+class MyClass implements Cloneable {
+
+    @Override
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+}
+```
+
+
+
+Ex:  Making a Clone Object
+
+```java
+class MyData implements Cloneable { //Cloneable is a Marker Interface
+
+    private String name;
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone(); //To change body of generated methods, choose Tools | Templates
+
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String s) {
+        this.name = s;
+    }
+
+    @Override
+    public String toString() {
+        return "Name = " + name;
+    }
+}
+
+class CloneObject {
+
+    public static void main(String[] args) {
+        try {
+            MyData a = new MyData();
+            MyData a1 = (MyData) a.clone();
+
+            a.setName("Hello");
+            a1.setName("World");
+
+            System.out.println(a); //Name = Hello
+            System.out.println(a1); //Name = World
+        } catch (CloneNotSupportedException e) {
+            System.out.println(e);
+        }
+    }
+}
+```
+
+
+Ex 1:
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+class Vehicle implements Cloneable {
+
+    private List<String> vehicleList;
+
+    public Vehicle() {
+        this.vehicleList = new ArrayList<String>();
+    }
+
+    public Vehicle(List<String> list) {
+        this.vehicleList = list;
+    }
+
+    public void insertData() {
+        vehicleList.add("Range Rover");
+        vehicleList.add("BMW");
+        vehicleList.add("Audi");
+        vehicleList.add("Honda");
+        vehicleList.add("Toyota");
+    }
+
+    public List<String> getVehicleList() {
+        return this.vehicleList;
+    }
+
+    public Object clone() throws CloneNotSupportedException {
+        List<String> tempList = new ArrayList<String>();
+
+        for (String s : this.getVehicleList()) {
+            tempList.add(s);
+        }
+        return new Vehicle(tempList);
+    }
+}
+
+class PrototypePatternExample {
+
+    public static void main(String[] args) throws CloneNotSupportedException {
+
+        Vehicle a = new Vehicle();
+        a.insertData();
+
+        Vehicle b = (Vehicle) a.clone();
+        List<String> list = b.getVehicleList();
+        list.add("Range Rover");
+
+        System.out.println(a.getVehicleList()); // [Range Rover, BMW, Audi, Honda, Toyota]
+        System.out.println(list); // [Range Rover, BMW, Audi, Honda, Toyota, Range Rover]
+
+        b.getVehicleList().remove("Audi");
+        System.out.println(list); //[Range Rover, BMW, Honda, Toyota, Range Rover]
+    }
+}
+```
+
+
+Procedure
+
+* Let's write a simple program that reads data from a database and then clones the resulting object
+* In our this program, BookShop, we just read these data from a array list, but the original data were derived from a large database as we discussed above
+  * We create a class called Book that holds Book id and Book name
+  * We create a class called BookShop that maintains a ArrayList of the Books we read in from the database
+  * We clone this class and add data differently in the new class
+  * Again we clone the data because creating a new class instance would be much slower, and we want to keep the data in both forms
+
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+class Book {
+
+    private int b_id;
+    private String b_name;
+
+    public void setB_id(int b_id) {
+        this.b_id = b_id;
+    }
+
+    public void setB_Name(String b_Name) {
+        this.b_name = b_Name;
+    }
+
+    public int getB_id() {
+        return b_id;
+    }
+
+    public String getB_name() {
+        return b_name;
+    }
+
+    @Override
+    public String toString() {
+        return "Book_Id: " + b_id + ", " + "Book Name: " + b_name;
+    }
+}
+
+class BookShop implements Cloneable {
+
+    private String ShopName;
+    private List<Book> books = new ArrayList<>();
+
+    public String getShopName() {
+        return ShopName;
+    }
+
+    public void setShopName(String ShopName) {
+        this.ShopName = ShopName;
+    }
+
+    public List<Book> getBooks() {
+        return books;
+    }
+
+    public void setBooks(List<Book> books) {
+        this.books = books;
+    }
+
+    public void addBooks() {
+        for (int x = 1; x <= 10; x++) {
+            Book b = new Book();
+            b.setB_id(x);
+            b.setB_Name("Story " + x);
+            getBooks().add(b);
+        }
+    }
+
+    @Override
+    protected BookShop clone() throws CloneNotSupportedException {
+        BookShop shop = new BookShop();
+
+        for (Book b : this.getBooks()) {
+            shop.getBooks().add(b);
+        }
+        return shop;
+    }
+
+    @Override
+    public String toString() {
+        return "Shop Name: " + ShopName + ", " + "Books: " + books;
+    }
+
+}
+
+class PrototypeClass {
+
+    public static void main(String[] args) {
+        try {
+            BookShop shop1 = new BookShop();
+            shop1.setShopName("My Shop");
+            shop1.addBooks();
+
+            BookShop shop2 = (BookShop) shop1.clone();
+            shop1.getBooks().remove(0);
+
+            System.out.println(shop1);// Shop Name: My Shop, Books: [Book_Id: 2, Book Name: Story 2, Book_Id: 3, Book Name: Story 3, Book_Id: 4, Book Name: Story 4, Book_Id: 5, Book Name: Story 5, Book_Id: 6, Book Name: Story 6, Book_Id: 7, Book Name: Story 7, Book_Id: 8, Book Name: Story 8, Book_Id: 9, Book Name: Story 9, Book_Id: 10, Book Name: Story 10]
+            System.out.println(shop2); //Shop Name: null, Books: [Book_Id: 1, Book Name: Story 1, Book_Id: 2, Book Name: Story 2, Book_Id: 3, Book Name: Story 3, Book_Id: 4, Book Name: Story 4, Book_Id: 5, Book Name: Story 5, Book_Id: 6, Book Name: Story 6, Book_Id: 7, Book Name: Story 7, Book_Id: 8, Book Name: Story 8, Book_Id: 9, Book Name: Story 9, Book_Id: 10, Book Name: Story 10]
+
+        } catch (CloneNotSupportedException e) {
+        }
+    }
+}
+```
