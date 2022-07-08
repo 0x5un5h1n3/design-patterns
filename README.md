@@ -1025,3 +1025,302 @@ class PrototypeClass {
     }
 }
 ```
+
+
+## 2.1. Adapter Design Pattern
+
+Properties
+
+* Structural design pattern
+* When objects offering same features, but has different interface. i.e. Charging Adapter, USB to Ethernet Adapter
+* It allows existing classes to be used with others with other without modifying their source code
+  * i.e. WebDriver Adapter
+
+
+Implementation
+
+* Interface - WebDriver
+* Interface Implementation - ChromeDriver, WebDriverAdapter
+* Adapter - ieDriver
+* Adaptee - ieDriver
+* Client - AdapterPatternTest
+
+
+Definition and Applicability
+
+* Adapters are used to enable objects with different interfaces to communicate with each other
+* The Adapter pattern is used to convert the programming interface of one class into that of another
+* We use adapters whenever we want unrelated classes to work together in a single program
+* Adapters come in two flavors
+  * Object Adapters
+  * Class Adapters
+* The concept of an adapter is this pretty simple; we write a class that has the desired interface and then make it communicate with the class that has a different interface
+* Adapters in Java can be implemented in two ways
+  * By Inheritance
+  * By Object Composition
+
+
+Object Adapters
+
+* Structural Object adapters use a compositional technique to adapt one interface to another
+* The adapter inherits the target interface that the client expects to see, while it holds an instance of the adaptee
+* When the client calls the request() method on its target object (the adapter), the request is translated into the corresponding specific request on the adaptee
+* Object adapters enable the client and the adaptee to be completely decoupled from each other.
+* Only the adapter knows about both of them
+
+
+Consequences of the Adapter Pattern
+
+* Class and object adapters have different trade-offs
+* A Class Adapter;
+  * Adapt Adaptee to Target by committing to a concrete Adapter class
+  * Lets Adapter override some of Adapter override some of Adaptee's behavior, since Adapter is a subclass of Adaptee;
+  * introduce only one object and no additional indirection is needed to get to the Adaptee
+* An Object Adapter
+  * lets a single adapter work with many Adaptees - that is, the Adaptee itself and all of its and all of its subclasses (if any). The Adapter can also add functinality to all Adaptee at once
+  * Makes it harder to override Adapter behavior. It will require sub-classing Adaptee and making Adapter refer to the subclass rather than the Adapter itself
+
+Ex 1:
+
+```java
+class SquarePeg {
+    
+    public void insert(String str) {
+        System.out.println("SquarePeg insert(): " + str); // SquarePeg insert(): Insert square peg...
+    }
+}
+
+class RoundPeg {
+    
+    public void insertIntoHole(String msg) {
+        System.out.println("RoundPeg inserIntoHole(): " + msg); //oundPeg inserIntoHole(): Insering round peg...
+    }
+}
+
+class RoundToSquarePegAdapter extends SquarePeg {
+    
+    private RoundPeg roundPeg;
+    
+    public RoundToSquarePegAdapter(RoundPeg peg) {
+        this.roundPeg = peg;
+    }
+    
+    @Override
+    public void insert(String str) {
+        roundPeg.insertIntoHole(str);
+    }
+}
+
+class ObjectAdapter {
+
+    public static void main(String[] args) {
+        RoundPeg roundPeg = new RoundPeg();
+        SquarePeg squarePeg = new SquarePeg();
+        
+        squarePeg.insert("Insert square peg...");
+        
+        RoundToSquarePegAdapter adapter = new RoundToSquarePegAdapter(roundPeg);
+        adapter.insert("Insering round peg...");
+    }
+}
+```
+
+
+Ex 2:
+
+```java
+interface HDMICable {
+
+    void plug(String txt);
+}
+
+class MyLaptop {
+
+    private HDMICable myHdmiCable;
+    
+    public void plugTheCable(String plug) {
+        myHdmiCable.plug(plug);
+    }
+    
+    public HDMICable getMyCable() {
+        return myHdmiCable;
+    }
+    
+    public void setMyCable(HDMICable hdmi) {
+        this.myHdmiCable = hdmi;
+    }
+}
+
+class USBCable {
+
+    public void plugUSBCable(String txt) {
+        System.out.println(txt); //USB Cable Connected!
+    }
+}
+
+class HDMIAdapter implements HDMICable {
+
+    USBCable usb = new USBCable();
+    
+    @Override
+    public void plug(String txt) {
+        usb.plugUSBCable("USB " + txt);
+    }
+}
+```
+
+
+Ex 3:
+
+```java
+interface WebDriver {
+
+    public void getElement();
+    public void selectElement();
+
+}
+
+class ChromeDriver implements WebDriver {
+
+    @Override
+    public void getElement() {
+        System.out.println("Get Element from ChromeDriver"); //Get Element from ChromeDriver
+    }
+
+    @Override
+    public void selectElement() {
+        System.out.println("Select Element from ChromeDriver"); //Select Element from ChromeDriver
+    }
+}
+
+class IEDriver {
+
+    public void findElement() {
+        System.out.println("Find Element from IEDriver"); //Find Element from IEDriver
+    }
+
+    public void clickElement() {
+        System.out.println("Click Element from IEDriver"); //Click Element from IEDriver
+    }
+}
+
+class WebDriverAdapter implements WebDriver {
+
+    IEDriver ieDriver;
+
+    public WebDriverAdapter(IEDriver ieDriver) {
+        this.ieDriver = ieDriver;
+    }
+
+    @Override
+    public void getElement() {
+        this.ieDriver = ieDriver;
+    }
+
+    @Override
+    public void selectElement() {
+        ieDriver.clickElement();
+    }
+}
+
+class AdapterDesignPattern {
+
+    public static void main(String[] args) {
+        ChromeDriver a = new ChromeDriver();
+        a.getElement();
+        a.selectElement();
+
+        IEDriver e = new IEDriver();
+        e.findElement();
+        e.clickElement();
+
+        WebDriver wID = new WebDriverAdapter(e);
+        wID.getElement();
+        wID.selectElement(); //Click Element from IEDriver
+    }
+}
+```
+
+
+Ex 4:
+
+```java
+//The IRoundPeg interface
+interface IRoundPeg {
+
+    public void insertIntoHole(String msg);
+}
+
+//The ISquarePeg interface
+interface ISquarePeg {
+
+    public void insert(String str);
+}
+
+//The RoundPeg interface
+class RoundPeg implements IRoundPeg {
+
+    @Override
+    public void insertIntoHole(String msg) {
+        System.out.println("RoundPeg insertIntoHole(): " + msg);
+    }
+}
+
+//The SquarePeg class
+class SquarePeg implements ISquarePeg {
+
+    @Override
+    public void insert(String str) {
+        System.out.println("SquarePeg insert(): " + str);
+    }
+}
+
+//The PegAdapter class. This is the two-way adapter class
+//Abstraction applies here. Only the interfaces can implement more than one classes
+class PegAdapter implements ISquarePeg, IRoundPeg {
+
+    private RoundPeg roundPeg;
+    private SquarePeg squarePeg;
+
+    public PegAdapter(RoundPeg peg) {
+        this.roundPeg = peg;
+    }
+
+    public PegAdapter(SquarePeg peg) {
+        this.squarePeg = peg;
+    }
+
+    @Override
+    public void insert(String str) {
+        roundPeg.insertIntoHole(str);
+    }
+
+    @Override
+    public void insertIntoHole(String msg) {
+        squarePeg.insert(msg);
+    }
+
+}
+
+//Test program for Pegs
+class TestPeg {
+
+    public static void main(String[] args) {
+        //Create some pegs
+        RoundPeg roundPeg = new RoundPeg();
+        SquarePeg squarePeg = new SquarePeg();
+
+        //Do an insert using the square peg
+        ISquarePeg roundToSquare = new PegAdapter(roundPeg);
+        roundToSquare.insert("Inserting round peg..."); //RoundPeg insertIntoHole(): Inserting round peg...
+
+        //Do an inser using the round peg
+        roundPeg.insertIntoHole("Inserting round peg..."); //RoundPeg insertIntoHole(): Inserting round peg...
+
+        //Create a two-way adapter and do an insert with it
+        IRoundPeg squareToRound = new PegAdapter(squarePeg);
+        squareToRound.insertIntoHole("Inserting square peg..."); // SquarePeg insert(): Inserting square peg...
+    }
+}
+```
+
