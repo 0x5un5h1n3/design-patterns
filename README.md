@@ -1324,3 +1324,237 @@ class TestPeg {
 }
 ```
 
+
+## 2.2. Composite Design Pattern
+
+Properties
+
+* Structural design pattern
+* Leaf Object is the sub unit of main Composite Object
+* Composite lets client treat individual objects(Leaf) and Compositions of objects(Composite) uniformly
+* 4 Participants
+  * Components
+  * Leaf
+  * Composite
+  * Client
+* If object is Leaf node, request is handled directly
+* If object is Composite, it forwards the request to child, so some operation and combine operations
+
+
+Implementation
+
+* Component - Account Class, which contains common method
+* Leaf - DepositAccount, SavingsAccount
+* Composite -  CompositeAccount
+* Client - Client Class
+* Getting the balance of all account for a person
+
+
+Definition and Applicability
+
+* The Composite Design pattern allows a client object to treat both single components identically
+* Composite patterns are often used to represent recursive data structures. The recursive nature of the Composite structure naturally gives way to recursive code to process that structure
+* Use the Composite pattern when;
+* you want to represent part-whole hierarchies of objects
+* You want to be able to ignore the difference between compositions of objects and individual objects. Clients will treat all objects in the composite uniformly
+
+
+Consequences
+
+* The Composite pattern allows you to define a class hierarchy of simple objects and more complex composite objects so that they appear to be the client program
+* Because of the simplicity, the client can be that much simpler, since nodes and leaves are handled in the same way
+* The Composite pattern also makes it easy for you to add new kinds of components to your collection, as long as they support a similar programming interface
+* The composite is essentially a singly-linked tree, in which any of the objects may themselves be additional composites
+
+
+Ex 1:
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+abstract class Account {
+
+    public abstract float getBalance();
+}
+
+class DepositAccount extends Account {
+
+    private String accountNo;
+    private float accountBalance;
+
+    public DepositAccount(String accountNo, float accountBalance) {
+        super();
+        this.accountNo = accountNo;
+        this.accountBalance = accountBalance;
+    }
+
+    @Override
+    public float getBalance() {
+        return accountBalance;
+    }
+}
+
+class SavingsAccount extends Account {
+
+    private String accountNo;
+    private float accountBalance;
+
+    public SavingsAccount(String accountNo, float accountBalance) {
+        super();
+        this.accountNo = accountNo;
+        this.accountBalance = accountBalance;
+    }
+
+    @Override
+    public float getBalance() {
+        return accountBalance;
+    }
+
+}
+
+class CompositeAccount extends Account {
+
+    private float totalBalance;
+    private List<Account> accountList = new ArrayList<Account>();
+
+    @Override
+    public float getBalance() {
+        totalBalance = 0;
+        for (Account f : accountList) {
+            totalBalance = totalBalance + f.getBalance();
+        }
+        return totalBalance;
+    }
+
+    public void addAccount(Account acc) {
+        accountList.add(acc);
+    }
+
+    public void removeAccount(Account acc) {
+        accountList.add(acc);
+    }
+}
+
+class Client {
+
+    public static void main(String[] args) {
+        CompositeAccount component = new CompositeAccount();
+        component.addAccount(new DepositAccount("DA001", 100));
+        component.addAccount(new DepositAccount("DA002", 150));
+        component.addAccount(new SavingsAccount("SA001", 200));
+
+        float totalBalance = component.getBalance();
+        System.out.println("Total Balance: " + totalBalance);
+
+    }
+}
+```
+
+
+Ex 2:
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+interface Componant {
+
+    void ShowPrice();
+}
+
+class Leaf implements Componant {
+
+    private int price;
+    private String name;
+
+    public Leaf(String name, int price) {
+        super();
+        this.name = name;
+        this.price = price;
+    }
+
+    @Override
+    public void ShowPrice() {
+        System.out.println("Name: " + name + " - " + "Price: " + price);
+    }
+
+}
+
+class Composite implements Componant {
+
+    private String name;
+    List<Componant> componants = new ArrayList<>();
+
+    public Composite(String name) {
+        super();
+        this.name = name;
+    }
+
+    void addComponant(Componant comp) {
+        componants.add(comp);
+    }
+
+    @Override
+    public void ShowPrice() {
+        System.out.println(name);
+
+        for (Componant c : componants) {
+            c.ShowPrice();
+        }
+    }
+}
+
+class TestComposite {
+
+    public static void main(String[] args) {
+        Composite mb = new Composite("MotherBoad Intel G41");
+        Leaf cpu = new Leaf("CPU i7", 25000);
+        Leaf ram = new Leaf("RAM 4 GB", 4000);
+        Leaf vga = new Leaf("VGA 2GB", 15000);
+        mb.addComponant(cpu);
+        mb.addComponant(ram);
+        mb.addComponant(vga);
+
+        Composite systemUnit = new Composite("System unit");
+        Leaf hdd = new Leaf("HDD 1TB", 8000);
+        Leaf power = new Leaf("Power Unit", 15000);
+        systemUnit.addComponant(hdd);
+        systemUnit.addComponant(power);
+        systemUnit.addComponant(mb); // Add the Composite MotherBoard to the System Unit
+
+        Composite peripheral = new Composite("Peripheral Devices");
+        Leaf moniter = new Leaf("Moniter 17inch", 15000);
+        Leaf mouse = new Leaf("Mouse", 2000);
+        Leaf keyBoard = new Leaf("key Board", 4500);
+        peripheral.addComponant(moniter);
+        peripheral.addComponant(mouse);
+        peripheral.addComponant(keyBoard);
+
+        Composite Computer = new Composite("Computer");
+        Computer.addComponant(systemUnit);
+        Computer.addComponant(peripheral);
+
+        peripheral.ShowPrice();
+//        Peripheral Devices
+//        Name: Moniter 17inch - Price: 15000
+//        Name: Mouse - Price: 2000
+//        Name: key Board - Price: 4500
+
+        Computer.ShowPrice();
+//        Computer
+//        System unit
+//        Name: HDD 1TB - Price: 8000
+//        Name: Power Unit - Price: 15000
+//        MotherBoad Intel G41
+//        Name: CPU i7 - Price: 25000
+//        Name: RAM 4 GB - Price: 4000
+//        Name: VGA 2GB - Price: 15000
+//        Peripheral Devices
+//        Name: Moniter 17inch - Price: 15000
+//        Name: Mouse - Price: 2000
+//        Name: key Board - Price: 4500
+
+    }
+}
+```
