@@ -1558,3 +1558,285 @@ class TestComposite {
     }
 }
 ```
+
+
+## 2.3. Proxy Design Pattern
+
+Properties
+
+* Structural design pattern
+* Used when you want to control access
+  * In databases, you would want to control the "delete" query available only for certain users like admin
+
+
+Implementation
+
+* In general, we've class which is executing interface executor method, which is executing all commands
+* To control this, we add a Proxy class which implements the same interface and write the conditions for "Admin" user before proceeding to actual executor
+
+Definition
+
+* In proxy pattern, a class represents functionality of another class
+* This type of design pattern comes under structural pattern
+* Provide a class which limit access to another class
+* We use this pattern will limit access to another class
+* We use this pattern for security reason
+* Situation like an object is intensive to create
+* An object that access from a remote location
+* In Proxy pattern, we create object having original object to interface its functionality to outer world
+
+
+Ex 1:
+
+```java
+import java.util.Scanner;
+
+interface AbstractBank {
+
+    void getMoney();
+
+    void depositMoney();
+
+    void getBalance();
+}
+
+class Bank implements AbstractBank {
+
+    public int accNo = 0;
+    double balance = 0;
+    String name = "";
+
+    public Bank(int accNo, String name) {
+        this.accNo = accNo;
+        this.name = name;
+    }
+
+    @Override
+    public void getMoney() {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter GetMoney Id as 'g' or DepositMoney Id as 'd'");
+        String tranceType = sc.next();
+        if (tranceType.equalsIgnoreCase("0")) {
+            System.out.println("Enter the amount : ");
+            balance -= Double.parseDouble(sc.next());
+            System.out.println("Transaction Completed: Your Balance is : " + balance);
+        } else {
+            System.out.println("Enter Deposit amount : ");
+            balance += Double.parseDouble(sc.next());
+            System.out.println("Transaction Completed: Your Balance is : " + balance);
+        }
+    }
+
+    @Override
+    public void depositMoney() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void getBalance() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+}
+
+class BankATM implements AbstractBank {
+
+    Bank myBank;
+    public int accNo = 0;
+    double balance = 0;
+    String name = "";
+
+    public BankATM(int accNo, String name) {
+        this.accNo = accNo;
+        this.name = name;
+        check();
+    }
+
+    void check() {
+        if (accNo == 001 & name.equalsIgnoreCase("user")) {
+            myBank = new Bank(accNo, name);
+        }
+    }
+
+    @Override
+    public void getMoney() {
+        myBank.getMoney();
+    }
+
+    @Override
+    public void depositMoney() {
+        myBank.depositMoney();
+    }
+
+    @Override
+    public void getBalance() {
+        myBank.depositMoney();
+    }
+}
+
+class client{
+    public static void main(String[] args) {
+        AbstractBank bank = new BankATM(001, "user");
+        bank.getMoney();
+    }
+}
+```
+
+
+Ex 2:
+
+```javascript
+class ImageClass{
+    private String fileName;
+    
+    public ImageClass(String fileName){
+        this.fileName = fileName;
+        loadFromDisk(fileName);
+    }
+    
+    void display(){
+        System.out.println("Display my Image :"+ fileName);
+    }
+    
+    private void loadFromDisk(String fileName) {
+        System.out.println("Loading " + fileName);
+    }
+}
+
+class Client{
+    /*
+    As part of its implementation, the Client class creates an instance of the ImageClass and directly accesses its services.
+    In Other words, for a client object, the way of accessing a Image object is fairly straightforward
+    */
+    public static void main(String[] args) {
+        ImageClass aa = new ImageClass("/Proxy/com.png");
+        aa.display();
+    }
+}
+
+//Loading /Proxy/com.png
+//Display my Image :/Proxy/com.png
+```
+
+
+Ex 3:
+
+```java
+interface Image {
+
+//Create an Imag interface
+    void display();
+}
+
+class RealImage implements Image {
+
+//create concrete classes implementing the same interface
+    private String fileName;
+
+    public RealImage(String fileName) {
+        this.fileName = fileName;
+        loadFromDisk(fileName);
+    }
+
+    @Override
+    public void display() {
+        System.out.println("Displaying " + fileName);
+    }
+
+    private void loadFromDisk(String fileName) {
+        System.out.println("Loading " + fileName);
+    }
+}
+
+class ProxyImage implements Image {
+
+    private RealImage realImage;
+    private String fileName;
+
+    public ProxyImage(String fileName) {
+        this.fileName = fileName;
+    }
+
+    @Override
+    public void display() {
+        if (realImage == null) {
+            realImage = new RealImage(fileName);
+        }
+        realImage.display();
+    }
+
+}
+
+class ProxyPatternDemo {
+
+//Use the ProxyImage to get object of RealImage class when required
+    public static void main(String[] args) {
+        Image image = new ProxyImage("/Proxy/com.png");
+        //image will be loaded from the disk
+        image.display();
+        System.out.println("");
+        //image will not be loaded from the disk
+        image.display();
+    }
+}
+
+//Loading /Proxy/com.png
+//Displaying /Proxy/com.png
+
+//Displaying /Proxy/com.png
+```
+
+
+Ex: 4:
+
+```java
+interface DatabaseExecuter {
+
+    public void executeDatabase(String query) throws Exception;
+}
+
+class DatabaseExecuterImpl implements DatabaseExecuter {
+
+    @Override
+    public void executeDatabase(String query) throws Exception {
+        System.out.println("Executing Query: " + query);
+    }
+}
+
+class DatabaseExecuteProxy implements DatabaseExecuter {
+
+    boolean ifAdmin;
+    DatabaseExecuterImpl dbExecuter;
+
+    public DatabaseExecuteProxy(String name, String passwd) {
+        if (name == "Admin" && passwd == "Admin@123") {
+            ifAdmin = true;
+            dbExecuter = new DatabaseExecuterImpl();
+        }
+    }
+
+    @Override
+    public void executeDatabase(String query) throws Exception {
+        if (ifAdmin) {
+            dbExecuter.executeDatabase(query);
+        } else {
+            if (query.equals("DELETE")) {
+                throw new Exception("DELETE not allowed for non-admin users");
+            } else {
+                dbExecuter.executeDatabase(query);
+            }
+        }
+    }
+}
+
+class ProxyPatternExample {
+
+    public static void main(String[] args) {
+//        DatabaseExecuter nonAdminExecuter = new DatabaseExecuteProxy("NonAdmin", "Admin123");
+//        nonAdminExecuter.executeDatabase("DELETE");
+
+        DatabaseExecuter adminExecuter = new DatabaseExecuteProxy("Admin", "Admin@123");
+        adminExecuter.executeDatabase("DELETE"); // Executing Query: DELETE
+    }
+}
+```
