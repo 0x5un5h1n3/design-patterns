@@ -2795,3 +2795,257 @@ Testing...
 Done
 */
 ```
+
+## 2.7. Decorator Design Pattern
+
+Properties
+
+* Structural design pattern
+* Used when we want to modify functionality of an Object at runtime and it should not change individual Object functionality
+  * i.e. Adding different functionalities in Dresses
+* Decorator pattern allows a user to add new functionality to an existing object without altering its structure
+* Decorator pattern acts as a wrapper to existing class
+* This pattern creates a decorator class which wraps the original class and provides additional functionality keeping class methods signature intact
+
+
+What problems can it solve
+
+* Responsibilities should be added to (and removed from) an object dynamically at run-time
+* A flexible alternative to sub-classing for extending functionality should be provided
+
+
+Ex 1:
+
+
+```java
+interface Pizza {
+
+    void make();
+}
+
+class CheesePizza implements Pizza {
+
+    @Override
+    public void make() {
+        System.out.println("Pizza: Chicken Pizza");
+    }
+
+}
+
+class ChickenPizza implements Pizza {
+
+    @Override
+    public void make() {
+        System.out.println("Pizza: Chicken Pizza");
+    }
+}
+
+abstract class PizzaDecorator implements Pizza {
+
+    protected Pizza decoratedPizza;
+
+    public PizzaDecorator(Pizza decoratedPizza) {
+        this.decoratedPizza = decoratedPizza;
+    }
+
+    @Override
+    public void make() {
+        decoratedPizza.make();
+    }
+
+}
+
+class CheesePizzaDecorator extends PizzaDecorator {
+
+    public CheesePizzaDecorator(Pizza decoratedPizza) {
+        super(decoratedPizza);
+    }
+
+    @Override
+    public void make() {
+        decoratedPizza.make();
+        addCheese(decoratedPizza);
+    }
+
+    private void addCheese(Pizza decoratedPizza) {
+        System.out.println("Chicken Pizza with Cheese");
+    }
+}
+
+class SpicyPizzaDecorator extends PizzaDecorator {
+
+    public SpicyPizzaDecorator(Pizza decoratedPizza) {
+        super(decoratedPizza);
+    }
+
+    @Override
+    public void make() {
+        decoratedPizza.make();
+        addCheese(decoratedPizza);
+
+    }
+
+    private void addCheese(Pizza decoratedPizza) {
+        System.out.println("Chicken Pizza with Spices");
+    }
+}
+
+class DecoratorPatternTest {
+
+    public static void main(String[] args) {
+        Pizza CheesePizza = new CheesePizza();
+        Pizza CheeseChicken = new CheesePizzaDecorator(new CheesePizza());
+        Pizza ChickenPizza = new CheesePizzaDecorator(new ChickenPizza());
+
+        System.out.println("Normal Cheese Pizza");
+        CheesePizza.make();
+
+        System.out.println("\nCheese Chicken Pizza");
+        CheeseChicken.make();
+        
+        System.out.println("\nChicken Pizza");
+        ChickenPizza.make();
+        
+        System.out.println("\n-----Mixed Pizza-----");
+        Pizza mixedPizza = new CheesePizzaDecorator(new SpicyPizzaDecorator(CheesePizza));
+        mixedPizza.make();
+    }
+}
+
+/*
+Normal Cheese Pizza
+Pizza: Chicken Pizza
+
+Cheese Chicken Pizza
+Pizza: Chicken Pizza
+Chicken Pizza with Cheese
+
+Chicken Pizza
+Pizza: Chicken Pizza
+Chicken Pizza with Cheese
+
+-----Mixed Pizza-----
+Pizza: Chicken Pizza
+Chicken Pizza with Spices
+Chicken Pizza with Cheese
+*/
+```
+
+
+Ex 2:
+
+```java
+interface Dress {
+
+    public void assemble();
+}
+
+class BasicDress implements Dress {
+
+    @Override
+    public void assemble() {
+        System.out.println("Basic Dress Features");
+    }
+
+}
+
+class DressDecorator implements Dress {
+
+    protected Dress dress;
+
+    public DressDecorator(Dress c) {
+        this.dress = c;
+    }
+
+    @Override
+    public void assemble() {
+        this.dress.assemble();
+    }
+
+}
+
+class CasualDress extends DressDecorator {
+
+    public CasualDress(Dress c) {
+        super(c);
+    }
+
+    @Override
+    public void assemble() {
+        super.assemble();
+        System.out.println("Adding Casual Dress Features");
+    }
+
+}
+
+class SportyDress extends DressDecorator {
+
+    public SportyDress(Dress c) {
+        super(c);
+    }
+
+    @Override
+    public void assemble() {
+        super.assemble();
+        System.out.println("Adding Sporty Dress Features");
+    }
+}
+
+class FancyDress extends DressDecorator {
+
+    public FancyDress(Dress c) {
+        super(c);
+    }
+
+    @Override
+    public void assemble() {
+        super.assemble();
+        System.out.println("Adding Fancy Dress Features");
+    }
+}
+
+class DecoratorPatterntest {
+
+    public static void main(String[] args) {
+        
+        Dress sportyDress = new SportyDress(new BasicDress());
+        sportyDress.assemble();
+        System.out.println();
+        
+        Dress fancyDress = new FancyDress(new BasicDress());
+        fancyDress.assemble();
+        System.out.println();
+        
+        Dress casualDress = new CasualDress(new BasicDress());
+        casualDress.assemble();
+        System.out.println();
+        
+        Dress sportyFancyDress = new SportyDress(new FancyDress(new BasicDress()));
+        sportyFancyDress.assemble();
+        System.out.println();
+        
+        Dress casualFancyDress = new CasualDress(new FancyDress(new BasicDress()));
+        casualFancyDress.assemble();
+        System.out.println();
+    }
+}
+
+/*
+Basic Dress Features
+Adding Sporty Dress Features
+
+Basic Dress Features
+Adding Fancy Dress Features
+
+Basic Dress Features
+Adding Casual Dress Features
+
+Basic Dress Features
+Adding Fancy Dress Features
+Adding Sporty Dress Features
+
+Basic Dress Features
+Adding Fancy Dress Features
+Adding Casual Dress Features F
+*/
+```
