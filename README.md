@@ -2188,3 +2188,188 @@ Developer with skill: C++ with Job: Fixing the Issue
 Tester with skill: C++ with Job: Testing the issue
 */
 ```
+
+
+## 2.5. Facade Design Pattern
+
+Properties
+
+* Structural design pattern
+* Used when there're multiple interfaces of similar kinds of jobs, then we add a Facade interface, which provide better interface to these interfaces and clients
+* It basically help in routing to related interface (i.e. Drivers, Databases)
+* So, as the name suggests, it means the face of the building. The people walking past the road can only see this glass face of the building. They do not know anything about it, the wiring, the pipes and other complexities. It hides all the complexities of the building and displays a friendly face
+* Example:
+  * In Java, the interface JDBC
+    * This can be called a facade because, we as users or clients create connection using the "java.sql.Connection" interface, the implementation of which we are not concerned about. The implementation is left to vendor of driver
+  * Startup of a Computer
+    * When a computer starts up, involves the work of cpu, memory, hard drive, etc. To make it easy to use for users, we can add a facade which wrap the complexity of the task, and provide one of the task, and provide one simple interface instead
+  * Same goes for the Facade design pattern. It hides the complexities of the system and provides an interface to the client from where the client can access the system
+
+
+Implementation
+
+* We'll implement a Facade helper class, which will route to method related to specific class based input
+
+
+Ex 1:
+
+```java
+interface abstractMenu{
+    String getMenu();
+}
+
+class MexicanFoodMenu implements abstractMenu{
+    @Override
+    public String getMenu(){
+        return "---------------"+"\n"
+                + "MEXICAN FOOD MENU"+"\n"
+                + "MEXICAN FOOD 1"+"\n"
+                + "MEXICAN FOOD 2"+"\n"
+                + "MEXICAN FOOD 3"+"\n"
+                + "MEXICAN FOOD 4"+"\n"
+                + "Total : $150";
+    }
+}
+
+class ChineseFoodMenu implements abstractMenu{
+  
+    @Override
+    public String getMenu() {
+        return "---------------"+"\n"
+                + "CHINESE FOOD MENU"+"\n"
+                + "CHINESE FOOD 1"+"\n"
+                + "CHINESE FOOD 2"+"\n"
+                + "CHINESE FOOD 3"+"\n"
+                + "Total : $250";
+    }
+}
+
+class WaiterFacade{
+    private MexicanFoodMenu mexican;
+    private ChineseFoodMenu chinese;
+
+public WaiterFacade(){
+    mexican = new MexicanFoodMenu();
+    chinese = new ChineseFoodMenu();
+}    
+    void getChineseMenu(){
+        System.out.println(chinese.getMenu());
+    }
+    
+    void getMexicanMenu(){
+        System.out.println(mexican.getMenu());
+    }
+}
+
+class Client{
+    public static void main(String[] args) {
+        WaiterFacade w = new WaiterFacade();
+        w.getMexicanMenu();
+        w.getChineseMenu();
+    }
+}
+
+/*
+---------------
+MEXICAN FOOD MENU
+MEXICAN FOOD 1
+MEXICAN FOOD 2
+MEXICAN FOOD 3
+MEXICAN FOOD 4
+Total : $150
+---------------
+CHINESE FOOD MENU
+CHINESE FOOD 1
+CHINESE FOOD 2
+CHINESE FOOD 3
+Total : $250
+*/
+```
+
+
+Ex 2:
+
+```java
+import java.sql.Driver;
+
+class Firefox {
+
+    public static Driver getFirefoxDriver() {
+        return null;
+    }
+
+    public static void generateHTMLReport(String test, Driver driver) {
+        System.out.println("Generating HUML report for Firefox Driver");
+    }
+
+    public static void generateJUnitReport(String test, Driver driver) {
+        System.out.println("Generating JUNIT report for Firefox Driver");
+    }
+}
+
+class Chrome {
+
+    public static Driver getChromeDriver() {
+        return null;
+    }
+
+    public static void generateHTMLReport(String test, Driver driver) {
+        System.out.println("Generating HTML Report for Chrome Driver");
+    }
+
+    public static void generateJUnitReport(String test, Driver driver) {
+        System.out.println("Generating JUNIT Report for Chrome Driver");
+    }
+}
+
+class WebExplorerHelperFacade {
+
+    public static void generateReports(String explorer, String report, String test) {
+        Driver driver = null;
+        switch (explorer) {
+            case "firefox":
+                driver = Firefox.getFirefoxDriver();
+                switch (report) {
+                    case "html":
+                        Firefox.generateHTMLReport(test, driver);
+                    case "junit":
+                        Firefox.generateJUnitReport(test, driver);
+                        break;
+                }
+            case "chrome":
+                driver = Chrome.getChromeDriver();
+                switch (report) {
+                    case "html":
+                        Chrome.generateHTMLReport(test, driver);
+                    case "junit":
+                        Chrome.generateJUnitReport(test, driver);
+                        break;
+                }
+        }
+    }
+}
+
+class FacadePatternExample {
+
+    public static void main(String[] args) {
+        String test = "CheckElementPresent";
+        WebExplorerHelperFacade.generateReports("firefox", "html", test);
+        WebExplorerHelperFacade.generateReports("firefox", "junit", test);
+        WebExplorerHelperFacade.generateReports("chrome", "html", test);
+        WebExplorerHelperFacade.generateReports("chrome", "junit", test);
+    }
+}
+
+/*
+Generating HUML report for Firefox Driver
+Generating JUNIT report for Firefox Driver
+Generating HTML Report for Chrome Driver
+Generating JUNIT Report for Chrome Driver
+Generating JUNIT report for Firefox Driver
+Generating JUNIT Report for Chrome Driver
+Generating HTML Report for Chrome Driver
+Generating JUNIT Report for Chrome Driver
+Generating JUNIT Report for Chrome Driver
+*/
+```
+
