@@ -1840,3 +1840,351 @@ class ProxyPatternExample {
     }
 }
 ```
+
+
+## 2.4. Flyweight Design Pattern
+
+Properties
+
+* Structural design pattern
+* This pattern provides ways to decrease object count this improving application required object structure
+* Used when we need to create many objects of a class, to reduce creation of objects
+* Flyweight pattern is used when we need to create a large number of similar objects (like 100000 obj)
+* One important feature of flyweight object is that they are immutable (This means that they cannot be modified once they have been constructed)
+
+
+Definition
+
+* Flyweight design pattern is used when there is to create large number of objects of amount of similar nature
+* The larger number of objects consume a large amount of memory and the fly weight design pattern provides a solution for reducing the load on the memory by sharing objects
+* Flyweight design pattern is primarily used to reduce the number of objects created, to decrease memory foot print and increase performance flyweight pattern try to re-use already exist similar kind of object by storing them and create  the new object when no matching object is found
+
+
+State of Flyweight design pattern
+
+* There are two state of fly weight design pattern
+  * Intrinsic
+    * Things that are Constant and are stored in memory
+    * (Same for an Object)
+  * Extrinsic
+    * Things that are not-constant and need to be calculated on the fly, and therefore not stored in the memory
+    * (Different for an object)
+
+
+Implementation
+
+* Interface - Which contain common method : Employee
+* Object - Individual class : Developer, Tester
+* Intrinsic Property (Developer : Fix the issue, Tester : test the issue)z
+* Extrinsic Property - Skills
+* We use Factory to use return Object - EmployeeFactory
+* Client - Client class
+
+
+Ex 1:
+
+```java
+//A common interface for all players
+import java.util.HashMap;
+import java.util.Random;
+
+interface Player {
+
+    public void assignWeapon(String weapon);
+
+    public void mission();
+}
+
+//Gurilla must have weapon and mission
+class Guerilla implements Player {
+
+    //Intrinsic Attribute
+    private final String TASK;
+    //Extrinsic Attribute
+    private String weapon;
+
+    public Guerilla() {
+        TASK = "Shoot To Soldier";
+    }
+
+    @Override
+    public void assignWeapon(String weapon) {
+        //Assign a weapon
+        this.weapon = weapon;
+    }
+
+    @Override
+    public void mission() {
+        //work on the mission
+        System.out.println("Guerilla with weapon " + weapon + " | " + "task is " + TASK);
+    }
+}
+//Soldier must have weapon and mission
+
+class Soldier implements Player {
+
+    //Intrinsic Attribute
+    private final String TASK;
+    //Extrinisic String weapon;
+    private String weapon;
+
+    public Soldier() {
+        TASK = "Shoot to Guerilla";
+    }
+
+    @Override
+    public void assignWeapon(String weapon) {
+        this.weapon = weapon;
+    }
+
+    @Override
+    public void mission() {
+        System.out.println("Soldier with weapon " + weapon + " | " + "task is " + TASK);
+    }
+}
+
+class PlayerFactory {
+
+    /*HashMap stores the reference to the object of Guerilla (TS) or Soldier (CT)
+     */
+    private static HashMap<String, Player> hm = new HashMap<String, Player>();
+
+    //Method ro get a player
+    public static Player getPlayer(String type) {
+        Player p = null;
+        /*If an object for Guerilla or Soldier has already been created simply return its reference
+         */
+
+        if (hm.containsKey(type)) {
+            p = hm.get(type);
+        } else {
+            // creates an object of Guerilla/Soldier
+            switch (type) {
+                case "Guerilla":
+                    System.out.println("Guerilla Created");
+                    p = new Guerilla();
+                    break;
+
+                case "Soldier":
+                    System.out.println("Soldier Created");
+                    p = new Soldier();
+                    break;
+
+                default:
+                    System.out.println("Unreachable code!");
+            }
+            //Code created insert it into the HashMap
+            hm.put(type, p);
+        }
+        return p;
+    }
+}
+
+// Driver class
+class BattleField {
+    //All payer types and weapons (used by getRandPlayerType() and getRandWeapon())
+
+    private static String[] playerType = {"Guerilla", "Soldier"};
+    private static String[] weapons = {"308_SniperRifle", "M16", "M1921", "QBZ-95", "RPG"};
+
+//Driver Code
+    public static void main(String[] args) {
+        //Assume that we have a total of 10 players in the game
+        for (int i = 0; i < 10; i++) {
+            //getPlayer() is called simply using the class name since the method is a static one
+
+            Player p = PlayerFactory.getPlayer(getRandPlayerType());
+
+            //Assign a weapon chosen randomly uniformly from the weapon array
+            p.assignWeapon(getRandWeapon());
+
+            //Send this player on a mission
+            p.mission();
+        }
+    }
+    //Utility methods to get a random player type and weapon
+
+    public static String getRandPlayerType() {
+        Random r = new Random();
+
+        //Will return an integer between(0, 2)
+        int randInt = r.nextInt(playerType.length);
+        System.out.println("@@@@@" + randInt);
+
+        //return the player stored at index 'randInt'
+        return playerType[randInt];
+    }
+
+    public static String getRandWeapon() {
+        Random r = new Random();
+        int randInt = r.nextInt(weapons.length);
+        System.out.println("@@@@@" + randInt);
+        //Return the weapon stored at index 'randInt'
+        return weapons[randInt];
+    }
+
+}
+// Random results
+
+/*
+@@@@@0
+Guerilla Created
+@@@@@3
+Guerilla with weapon QBZ-95 | task is Shoot To Soldier
+@@@@@0
+@@@@@1
+Guerilla with weapon M16 | task is Shoot To Soldier
+@@@@@0
+@@@@@2
+Guerilla with weapon M1921 | task is Shoot To Soldier
+@@@@@1
+Soldier Created
+@@@@@1
+Soldier with weapon M16 | task is Shoot to Guerilla
+@@@@@0
+@@@@@4
+Guerilla with weapon RPG | task is Shoot To Soldier
+@@@@@0
+@@@@@0
+Guerilla with weapon 308_SniperRifle | task is Shoot To Soldier
+@@@@@1
+@@@@@2
+Soldier with weapon M1921 | task is Shoot to Guerilla
+@@@@@1
+@@@@@2
+Soldier with weapon M1921 | task is Shoot to Guerilla
+@@@@@1
+@@@@@2
+Soldier with weapon M1921 | task is Shoot to Guerilla
+@@@@@1
+@@@@@0
+Soldier with weapon 308_SniperRifle | task is Shoot to Guerilla
+*/
+```
+
+
+Ex 2:
+
+```java
+import java.util.HashMap;
+import java.util.Random;
+
+interface Employee {
+
+    public void assignSkill(String skill);
+
+    public void task();
+}
+
+class Developer implements Employee {
+
+    private final String JOB;
+    private String skill;
+
+    public Developer() {
+        JOB = "Fixing the Issue";
+    }
+
+    @Override
+    public void assignSkill(String skill) {
+        this.skill = skill;
+    }
+
+    @Override
+    public void task() {
+        System.out.println("Developer with skill: " + this.skill + " with Job: " + JOB);
+    }
+}
+
+class Tester implements Employee {
+
+    private final String JOB;
+    private String skill;
+
+    public Tester() {
+        JOB = "Testing the issue";
+    }
+
+    @Override
+    public void assignSkill(String skill) {
+        this.skill = skill;
+    }
+
+    @Override
+    public void task() {
+        System.out.println("Tester with skill: " + skill + " with Job: " + JOB);
+    }
+}
+
+class EmployeeFactory {
+
+    private static HashMap<String, Employee> m = new HashMap<String, Employee>();
+
+    public static Employee getEmployee(String type) {
+        Employee p = null;
+        if (m.get(type) != null) {
+            p = m.get(type);
+        } else {
+            switch (type) {
+                case "Developer":
+                    System.out.println("Developer Created");
+                    p = new Developer();
+                    break;
+                case "Tester":
+                    System.out.println("Tester Created");
+                    p = new Tester();
+                default:
+                    System.out.println("No such Employee");
+            }
+            m.put(type, p);
+        }
+        return p;
+    }
+}
+
+class Engineering {
+
+    private static String employeeType[] = {"Developer", "Tester"};
+    private static String skills[] = {"Java", "Python", "C++", ".NET"};
+
+    public static void main(String[] args) {
+        for (int i = 0; i < 10; i++) {
+            Employee e = EmployeeFactory.getEmployee(getRandEmployee());
+            e.assignSkill(getRandSkill());
+            e.task();
+        }
+    }
+
+    public static String getRandEmployee() {
+        Random r = new Random();
+        int randInt = r.nextInt(employeeType.length);
+
+        return employeeType[randInt];
+    }
+
+    public static String getRandSkill() {
+        Random r = new Random();
+        int randInt = r.nextInt(skills.length);
+
+        return skills[randInt];
+    }
+}
+
+//Random Results
+
+/*
+Tester Created
+No such Employee
+Tester with skill: Java with Job: Testing the issue
+Developer Created
+Developer with skill: .NET with Job: Fixing the Issue
+Developer with skill: .NET with Job: Fixing the Issue
+Tester with skill: C++ with Job: Testing the issue
+Tester with skill: Python with Job: Testing the issue
+Developer with skill: Python with Job: Fixing the Issue
+Developer with skill: C++ with Job: Fixing the Issue
+Tester with skill: Java with Job: Testing the issue
+Developer with skill: C++ with Job: Fixing the Issue
+Tester with skill: C++ with Job: Testing the issue
+*/
+```
