@@ -2373,3 +2373,425 @@ Generating JUNIT Report for Chrome Driver
 */
 ```
 
+
+## 2.6. Bridge Design Pattern
+
+Properties
+
+* Structural design pattern
+* Bridge pattern is used to separate the interface(abstraction) of class from its implementation, so that either can be varied separately
+  * The intent of the Adapter pattern is to make one or more classes' interface look the same as that of a particular class
+  * The Bridge pattern is designed to separate a class' interface from its implementation, so that you can vary or replace the implementation without changing the client code
+* There are 2 parts in Bridge design pattern
+  * Abstraction
+  * Implementation
+* Used when we've hierarchies in both interface as well as implementations and we want to hide the implementation from client
+* It decouple abstraction from it implementation
+* Generally we've TV remote, which works differently for Sony and Philips TV, but we can have different Remote as well, i.e. oldRemote and newRemote, which have different methods for each TV
+  * i.e. TV and Remote implementation
+
+
+Design mechanism that encapsulates an implementation class inside of an interface class
+
+* The Bridge pattern allows the Abstraction and the Implementation to be developed independently and the client code can access only the Abstraction part without being concerned about the implementation part
+* The abstraction is an interface or abstract class and implementer is also an interface or abstract class
+* The abstraction contains a reference to the implementer. Children of the abstraction are referred as Refined Abstractions, and children of the implementer are Concrete implementer(s). Since we can change the reference to the implementer in the abstraction, we are able to change the abstraction's implementer at run-time.
+* Changes to the implementer do not affect client code
+* It increases the loose coupling between class abstraction and its implementation
+
+
+Elements of Bridge Design Pattern
+
+* Abstraction
+  * Core of the bridge design pattern and defines the crux. Contains reference to the implementer
+* Refined Abstraction
+  * Extends the abstraction takes the finer detail one level below. Hides the finer elements from implementer(s)
+* Implementer
+  * It defines the interface implementation classes. This interface does not need to correspond directly to the abstraction interface and can be very different. Abstraction imp provides an implementation in terms of operations provided by implementer interface
+* Concrete Implementation
+  * Implements the above implementer by providing concrete implementation
+
+
+Implementation
+
+* Class hierarchy : TV, SonyTV, PhilipsTV
+* Interface hierarchy : Remote, OldRemote, NewRemote
+* Client : Client class
+
+
+Ex 1:
+
+```java
+abstract class TV {
+
+    Remote remote;
+
+    TV(Remote r) {
+        this.remote = r;
+    }
+
+    abstract void on();
+
+    abstract void off();
+}
+
+class Sony extends TV {
+
+    Remote remoteType;
+
+    Sony(Remote r) {
+        super(r);
+        this.remoteType = r;
+    }
+
+    @Override
+    public void on() {
+        System.out.print("Sony TV ON: ");
+        remoteType.on();
+    }
+
+    @Override
+    public void off() {
+        System.out.print("Sony TV OFF: ");
+        remoteType.off();
+    }
+}
+
+class Philips extends TV {
+
+    Remote remoteType;
+
+    Philips(Remote r) {
+        super(r);
+        this.remoteType = r;
+    }
+
+    @Override
+    public void on() {
+        System.out.print("Philips TV ON: ");
+        remoteType.on();
+    }
+
+    @Override
+    public void off() {
+        System.out.print("Philips TV OFF: ");
+        remoteType.off();
+    }
+}
+
+interface Remote {
+
+    public void on();
+
+    public void off();
+}
+
+class OldRemote implements Remote {
+
+    @Override
+    public void on() {
+        System.out.println("ON with Old Remote");
+    }
+
+    @Override
+    public void off() {
+        System.out.println("OFF with Old Remote");
+    }
+}
+
+class NewRemote implements Remote {
+
+    @Override
+    public void on() {
+        System.out.println("ON with New Remote");
+    }
+
+    @Override
+    public void off() {
+        System.out.println("OFF with New Remote");
+    }
+
+}
+
+class Client {
+
+    public static void main(String[] args) {
+        TV sonyOldRemote = new Sony(new OldRemote());
+        sonyOldRemote.on();
+        sonyOldRemote.off();
+        System.out.println();
+
+        TV sonyNewRemote = new Sony(new NewRemote());
+        sonyNewRemote.on();
+        sonyNewRemote.off();
+        System.out.println();
+
+        TV philipsOldRemote = new Philips(new OldRemote());
+        philipsOldRemote.on();
+        philipsOldRemote.off();
+        System.out.println();
+
+        TV philipsNewRemote = new Philips(new NewRemote());
+        philipsNewRemote.on();
+        philipsNewRemote.off();
+
+    }
+}
+
+/*
+Sony TV ON: ON with Old Remote
+Sony TV OFF: OFF with Old Remote
+
+Sony TV ON: ON with New Remote
+Sony TV OFF: OFF with New Remote
+
+Philips TV ON: ON with Old Remote
+Philips TV OFF: OFF with Old Remote
+
+Philips TV ON: ON with New Remote
+Philips TV OFF: OFF with New Remote
+*/
+```
+
+
+Ex 2:
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+//Concrete implementation 1 for Bridge pattern
+class AssembleWorkShop extends WorkShop {
+
+    public AssembleWorkShop() {
+        super();
+    }
+
+    @Override
+    public void work(Vehicle vehicle) {
+        System.out.println("Assembling...");
+        long timeToTake = 200 * vehicle.minWorkTime();
+        try {
+            TimeUnit.MILLISECONDS.sleep(timeToTake); //Thread.sleep(timeToTake);
+        } catch (InterruptedException e) {
+        }
+        System.out.printf("(Time taken : %d millis), Done.\n", timeToTake);
+    }
+}
+
+//Refine abstraction 1 in Bridge pattern
+class Bike extends Vehicle {
+
+    @Override
+    public void manufactre() {
+        System.out.println("Manufacturing Bike...");
+        workshops.stream().forEach(workshop -> workshop.work(this));
+        System.out.println("Done");
+        System.out.println();
+    }
+
+    @Override
+    public int minWorkTime() {
+        return 5;
+    }
+
+}
+
+class Bus extends Vehicle {
+
+    @Override
+    public void manufactre() {
+        System.out.println("Manufacturing Bus...");
+        workshops.stream().forEach(workshop -> workshop.work(this));
+        System.out.println("Done");
+        System.out.println();
+    }
+
+    @Override
+    public int minWorkTime() {
+        return 20;
+    }
+
+}
+
+//Refine abstraction 2 in Bridge pattern
+class Car extends Vehicle {
+
+    @Override
+    public void manufactre() {
+        System.out.println("Manufacturing Car...");
+        workshops.stream().forEach(workshop -> workshop.work(this));
+        System.out.println("Done");
+        System.out.println();
+    }
+
+    @Override
+    public int minWorkTime() {
+        return 10;
+    }
+
+}
+
+class Main {
+
+    public static void main(String[] args) {
+
+        Vehicle bike = new Bike();
+        bike.joinWorkShop(new ProduceWorkShop());
+        bike.joinWorkShop(new AssembleWorkShop());
+        bike.joinWorkShop(new TestWorkShop());
+        bike.manufactre();
+
+        Vehicle car = new Car();
+        car.joinWorkShop((new ProduceWorkShop()));
+        car.joinWorkShop((new AssembleWorkShop()));
+        car.joinWorkShop((new PaintWorkShop()));
+        car.joinWorkShop((new TestWorkShop()));
+        car.manufactre();
+
+        Vehicle bus = new Bus();
+        bus.joinWorkShop(new RepairWorkShop());
+        bus.joinWorkShop(new AssembleWorkShop());
+        bus.joinWorkShop(new TestWorkShop());
+        bus.manufactre();
+    }
+}
+
+class PaintWorkShop extends WorkShop {
+
+    public PaintWorkShop() {
+        super();
+    }
+
+    @Override
+    public void work(Vehicle vehicle) {
+        System.out.println("Painting...");
+        long timeToTake = 400 * vehicle.minWorkTime();
+        try {
+            TimeUnit.MILLISECONDS.sleep(timeToTake); //Thread.sleep(timeToTake);
+        } catch (InterruptedException e) {
+        }
+        System.out.printf("(Time taken : %d millis), Done.\n", timeToTake);
+    }
+}
+
+//Concrete implementation 1 for Bridge pattern
+class ProduceWorkShop extends WorkShop {
+
+    public ProduceWorkShop() {
+        super();
+    }
+
+    @Override
+    public void work(Vehicle vehicle) {
+        System.out.println("Producing...");
+        long timeToTake = 300 * vehicle.minWorkTime();
+        try {
+            TimeUnit.MILLISECONDS.sleep(timeToTake); //Thread.sleep(timeToTake);
+        } catch (InterruptedException e) {
+        }
+        System.out.printf("(Time taken : %d millis), Done.\n", timeToTake);
+    }
+}
+
+//Concrete implementation 2 for Bridge pattern
+class RepairWorkShop extends WorkShop {
+
+    public RepairWorkShop() {
+        super();
+    }
+
+    @Override
+    public void work(Vehicle vehicle) {
+        System.out.println("Repairing...");
+        long timeToTake = 150 * vehicle.minWorkTime();
+        try {
+            TimeUnit.MILLISECONDS.sleep(timeToTake); //Thread.sleep(timeToTake);
+        } catch (InterruptedException e) {
+        }
+        System.out.printf("(Time taken : %d millis), Done.\n", timeToTake);
+    }
+}
+
+//Concrete implementation 3 for Bridge pattern
+class TestWorkShop extends WorkShop {
+
+    public TestWorkShop() {
+        super();
+    }
+
+    @Override
+    public void work(Vehicle vehicle) {
+        System.out.println("Testing...");
+        long timeToTake = 50 * vehicle.minWorkTime();
+        try {
+            TimeUnit.MILLISECONDS.sleep(timeToTake); //Thread.sleep(timeToTake);
+        } catch (InterruptedException e) {
+        }
+        System.out.printf("(Time taken : %d millis), Done.\n", timeToTake);
+    }
+}
+
+abstract class Vehicle {
+
+    protected List<WorkShop> workshops = new ArrayList<WorkShop>();
+
+    public Vehicle() {
+        super();
+    }
+
+    public boolean joinWorkShop(WorkShop workshop) {
+        return workshops.add(workshop);
+    }
+
+    public abstract void manufactre();
+
+    public abstract int minWorkTime();
+
+}
+
+
+/*
+Implementor -
+It defines the interface for implementing classes
+This interface does not need to correspond directly to the abstraction interface and can be very different
+Abstraction imp provides an implementation in terms of operations provided by implementatoer interface
+ */
+abstract class WorkShop {
+
+    public abstract void work(Vehicle vehicle);
+
+}
+
+/*
+Manufacturing Bike...
+Producing...
+(Time taken : 1500 millis), Done.
+Assembling...
+(Time taken : 1000 millis), Done.
+Testing...
+(Time taken : 250 millis), Done.
+Done
+
+Manufacturing Car...
+Producing...
+(Time taken : 3000 millis), Done.
+Assembling...
+(Time taken : 2000 millis), Done.
+Painting...
+(Time taken : 4000 millis), Done.
+Testing...
+(Time taken : 500 millis), Done.
+Done
+
+Manufacturing Bus...
+Repairing...
+(Time taken : 3000 millis), Done.
+Assembling...
+(Time taken : 4000 millis), Done.
+Testing...
+(Time taken : 1000 millis), Done.
+Done
+*/
+```
